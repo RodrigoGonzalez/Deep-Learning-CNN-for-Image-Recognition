@@ -44,7 +44,7 @@ class UtilTransfer(object):
         end_time = time.time()
         time_dif = end_time - start_time
         # Print the time-usage.
-        print("Time usage: " + str(timedelta(seconds=int(round(time_dif)))))
+        print(f"Time usage: {str(timedelta(seconds=int(round(time_dif))))}")
         
     def plot_example_errors(self, cls_pred, correct, images_test, cls_test, plot_images, images):
         # This function is called from print_test_accuracy() below.
@@ -55,9 +55,7 @@ class UtilTransfer(object):
         # Get the true classes for those images.
         cls_true = cls_test[incorrect]
         # Plot the first 9 images.
-        plot_images(images=images[0:9],
-                    cls_true=cls_true[0:9],
-                    cls_pred=cls_pred[0:9])
+        plot_images(images=images[:9], cls_true=cls_true[:9], cls_pred=cls_pred[:9])
        
     def plot_confusion_matrix(self, cls_pred, cls_test, num_classes, class_names):
         # This is called from print_test_accuracy() below.
@@ -67,7 +65,7 @@ class UtilTransfer(object):
         # Print the confusion matrix as text.
         for i in range(num_classes):
             # Append the class-name to each line.
-            class_name = "({}) {}".format(i, class_names[i])
+            class_name = f"({i}) {class_names[i]}"
             print(cm[i, :], class_name)
         # Print the class-numbers for easy reference.
         class_numbers = [" ({0})".format(i) for i in range(num_classes)]

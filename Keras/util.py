@@ -48,10 +48,10 @@ class Util(object):
         # print(history.history.keys())
         # summarize history for accuracy
         plt.plot(history.history[metric])
-        plt.plot(history.history['val_'+metric])
+        plt.plot(history.history[f'val_{metric}'])
         if metric == 'acc': 
             metric = 'accuracy'
-        plt.title('model ' + metric)
+        plt.title(f'model {metric}')
         plt.ylabel(metric)
         plt.xlabel('epoch')
         plt.legend(['train', 'test'], loc=loc)
@@ -64,19 +64,12 @@ class Util(object):
         fig, axes = plt.subplots(3, 3)
 
         # Adjust vertical spacing if we need to print ensemble and best-net.
-        if cls_pred is None:
-            hspace = 0.3
-        else:
-            hspace = 0.6
+        hspace = 0.3 if cls_pred is None else 0.6
         fig.subplots_adjust(hspace=hspace, wspace=0.3)
 
         for i, ax in enumerate(axes.flat):
             # Interpolation type.
-            if smooth:
-                interpolation = 'spline16'
-            else:
-                interpolation = 'nearest'
-
+            interpolation = 'spline16' if smooth else 'nearest'
             # Plot image.
             ax.imshow(images[i, :, :, :],
                       interpolation=interpolation)
@@ -229,9 +222,9 @@ class Util(object):
         cls_true = data.test.cls[incorrect]
 
         # Plot the first 9 images.
-        self.plot_images(images=images[0:9],
-                    cls_true=cls_true[0:9],
-                    cls_pred=cls_pred[0:9])
+        self.plot_images(
+            images=images[:9], cls_true=cls_true[:9], cls_pred=cls_pred[:9]
+        )
 
 
     def plot_weights(self, session, weights, img_shape=(28,28)):

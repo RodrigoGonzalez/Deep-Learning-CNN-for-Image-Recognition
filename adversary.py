@@ -92,9 +92,7 @@ class Adversary(object):
 
             # If the gradient is very small then use a lower limit,
             # because we will use it as a divisor.
-            if grad_absmax < 1e-10:
-                grad_absmax = 1e-10
-
+            grad_absmax = max(grad_absmax, 1e-10)
             # Calculate the step-size for updating the image-noise.
             # This ensures that at least one pixel colour is changed by 7.
             # Recall that pixel colours can have 255 different values.
@@ -116,21 +114,19 @@ class Adversary(object):
             # Newline.
             print()
 
-            # If the score for the target-class is not high enough.
-            if score_target < required_score:
-                # Update the image-noise by subtracting the gradient
-                # scaled by the step-size.
-                noise -= step_size * grad
-
-                # Ensure the noise is within the desired range.
-                # This avoids distorting the image too much.
-                noise = np.clip(a=noise,
-                                a_min=-noise_limit,
-                                a_max=noise_limit)
-            else:
+            if score_target >= required_score:
                 # Abort the optimization because the score is high enough.
                 break
-                
+
+            # Update the image-noise by subtracting the gradient
+            # scaled by the step-size.
+            noise -= step_size * grad
+
+            # Ensure the noise is within the desired range.
+            # This avoids distorting the image too much.
+            noise = np.clip(a=noise,
+                            a_min=-noise_limit,
+                            a_max=noise_limit)
         return (image.squeeze(), noisy_image.squeeze(), noise, name_source, name_target, score_source, score_source_org, score_target)
 
     
@@ -139,10 +135,7 @@ class Adversary(object):
         x_min = x.min()
         x_max = x.max()
 
-        # Normalize so all values are between 0.0 and 1.0
-        x_norm = (x - x_min) / (x_max - x_min)
-
-        return x_norm
+        return (x - x_min) / (x_max - x_min)
     
     def plot_images(self, image, noise, noisy_image,
                     name_source, name_target,
@@ -175,11 +168,7 @@ class Adversary(object):
         smooth = True
 
         # Interpolation type.
-        if smooth:
-            interpolation = 'spline16'
-        else:
-            interpolation = 'nearest'
-
+        interpolation = 'spline16' if smooth else 'nearest'
         # Plot the original image.
         # Note that the pixel-values are normalized to the [0.0, 1.0]
         # range by dividing with 255.
